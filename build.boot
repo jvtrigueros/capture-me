@@ -13,9 +13,8 @@
                   [org.slf4j/slf4j-nop "1.7.13" :scope "test"]
 
                   [org.clojure/clojurescript "1.7.228"]
-                  [cljsjs/leaflet "0.7.7-4"]
                   [cljsjs/leaflet-locatecontrol "0.43.0-1"]
-                  [cljsjs/react-leaflet "0.11.4-1"]
+                  [cljsjs/leaflet "0.7.7-4"]
                   [org.webjars/font-awesome "4.6.3"]
                   [rum "0.10.4"]])
 
