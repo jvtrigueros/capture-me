@@ -1,38 +1,22 @@
 (ns capture-me.app
   (:require [cljsjs.leaflet-locatecontrol]
-            [cljsjs.leaflet]
+            [cljsjs.react-leaflet]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def locate-options
-  {:position "topright"
-   :strings  {:title "Show me where I am, yo!"}})
-
 (def tilelayer-options
-  {:maxZoom     18
+  {:url         "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}"
+   :maxZoom     18
+   :minZoom     10
    :id          "mapbox.streets"
    :accessToken "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw"
    :attribution "© <a href='https://www.mapbox.com/map-feedback/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"})
 
-#_(defn init []
-    (let [element-name "pokemap"]
-      mappy (-> js/L
-                (.map element-name)
-                (.setView (array 51 0) 13))
-      (-> js/L
-          (.tileLayer "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}"
-                      (clj->js tilelayer-options))
-          (.addTo mappy))
-      (-> js/L
-          .-control
-          (.locate (clj->js locate-options))
-          (.addTo mappy))))
-
-(rum/defcc pokemap
-  [component]
-  (println (pr-str component))
-  [:div "Hello World"])
+(rum/defc pokemap
+  []
+  (js/React.createElement js/ReactLeaflet.Map (clj->js {:zoom 13 :center [35.0853 -106.6056]})
+                          (js/React.createElement js/ReactLeaflet.TileLayer (clj->js tilelayer-options))))
 
 (defn init []
   (rum/mount
