@@ -6,6 +6,8 @@
 
 (enable-console-print!)
 
+(def app-state (atom {:position [35.0853 -106.6056]}))
+
 (def tilelayer-options
   {:url         "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}"
    :maxZoom     18
@@ -26,7 +28,19 @@
                                                                                    :icon (pokemon-icon 1)})
                                                   (js/React.createElement js/ReactLeaflet.Popup #js {} (html [:span "Albuquerque"])))))
 
+(rum/defcs spot-button < (rum/local 0 ::offset)
+  [state]
+  (let [offset (::offset state)]
+    [:button.spot-button {:on-click (fn [_] (do
+                                              (swap! offset #(+ % 0.01))
+                                              (swap! app-state update-in [:position] #(mapv (fn [n] (+ n @offset)) %))))}
+     "Spotted!"]))
+
+(rum/defc app
+  []
+  [:div (pokemap) (spot-button)])
+
 (defn init []
   (rum/mount
-    (pokemap)
+    (app)
     (. js/document (getElementById "pokemap"))))
