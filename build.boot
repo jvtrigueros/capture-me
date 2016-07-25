@@ -14,7 +14,8 @@
 
                   [org.clojure/clojurescript "1.7.228"]
                   [cljsjs/leaflet-locatecontrol "0.43.0-1"]
-                  [cljsjs/leaflet "0.7.7-4"]
+                  ;[cljsjs/leaflet "0.7.7-4"]
+                  [cljsjs/react-leaflet "0.11.4-1"]
                   [org.webjars/font-awesome "4.6.3"]
                   [rum "0.10.4"]])
 
