@@ -1,7 +1,8 @@
 (ns capture-me.app
   (:require [cljsjs.leaflet-locatecontrol]
             [cljsjs.react-leaflet]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [sablono.core :as html :refer-macros [html]]))
 
 (enable-console-print!)
 
@@ -16,7 +17,9 @@
 (rum/defc pokemap
   []
   (js/React.createElement js/ReactLeaflet.Map (clj->js {:zoom 13 :center [35.0853 -106.6056]})
-                          (js/React.createElement js/ReactLeaflet.TileLayer (clj->js tilelayer-options))))
+                          (js/React.createElement js/ReactLeaflet.TileLayer (clj->js tilelayer-options))
+                          (js/React.createElement js/ReactLeaflet.Marker (clj->js {:position [35.08 -106.6]})
+                                                  (js/React.createElement js/ReactLeaflet.Popup #js {} (html [:span "Albuquerque"])))))
 
 (defn init []
   (rum/mount

@@ -2,7 +2,7 @@
   :source-paths #{"sass" "src/cljs"}
   :resource-paths #{"resources"}
   :dependencies '[[adzerk/boot-cljs "1.7.228-1" :scope "test"]
-                  [adzerk/boot-cljs-repl "0.3.0" :scope "test"]
+                  [adzerk/boot-cljs-repl "0.3.2" :scope "test"]
                   [cljsjs/boot-cljsjs "0.5.1" :scope "test"]
                   [adzerk/boot-reload "0.4.8" :scope "test"]
                   [pandeiro/boot-http "0.7.2" :scope "test"]
