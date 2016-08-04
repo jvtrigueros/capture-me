@@ -14,9 +14,9 @@
 
                   [org.clojure/clojurescript "1.7.228"]
                   [cljsjs/leaflet-locatecontrol "0.43.0-1"]
-                  ;[cljsjs/leaflet "0.7.7-4"]
                   [cljsjs/react-leaflet "0.11.4-1"]
                   [org.webjars/font-awesome "4.6.3"]
+                  [org.webjars.bower/deepstream.io-client-js "1.0.2"]
                   [rum "0.10.4"]])
 
 (require
@@ -32,16 +32,26 @@
                (cljs)
                (sass)))
 
+(deftask deepstream-client-js []
+         (comp
+           (from-webjars :name "deepstream.io-client-js/dist/deepstream.js"
+                         :target "js/deepstream.js")))
+
+(deftask fontawesome []
+         (comp
+           (from-webjars :name "font-awesome/fonts/fontawesome-webfont.woff2"
+                         :target "fonts/fontawesome-webfont.woff2")
+           (from-webjars :name "font-awesome/fonts/fontawesome-webfont.woff"
+                         :target "fonts/fontawesome-webfont.woff")
+           (from-webjars :name "font-awesome/css/font-awesome.css"
+                         :target "css/font-awesome.css")))
+
 (deftask run []
          (comp (serve)
                (watch)
                (from-cljsjs)
-               (from-webjars :name "font-awesome/fonts/fontawesome-webfont.woff2"
-                             :target "public/fonts/fontawesome-webfont.woff2")
-               (from-webjars :name "font-awesome/fonts/fontawesome-webfont.woff"
-                             :target "public/fonts/fontawesome-webfont.woff")
-               (from-webjars :name "font-awesome/css/font-awesome.css"
-                             :target "public/css/font-awesome.css")
+               (deepstream-client-js)
+               (fontawesome)
                (cljs-repl)
                (reload)
                (build)))
