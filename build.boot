@@ -2,7 +2,7 @@
   :source-paths #{"sass" "src/cljs"}
   :resource-paths #{"resources"}
   :dependencies '[[adzerk/boot-cljs "1.7.228-1" :scope "test"]
-                  [adzerk/boot-cljs-repl "0.3.0" :scope "test"]
+                  [adzerk/boot-cljs-repl "0.3.2" :scope "test"]
                   [cljsjs/boot-cljsjs "0.5.1" :scope "test"]
                   [adzerk/boot-reload "0.4.8" :scope "test"]
                   [pandeiro/boot-http "0.7.2" :scope "test"]
@@ -14,7 +14,8 @@
 
                   [org.clojure/clojurescript "1.7.228"]
                   [cljsjs/leaflet-locatecontrol "0.43.0-1"]
-                  [cljsjs/leaflet "0.7.7-4"]
+                  ;[cljsjs/leaflet "0.7.7-4"]
+                  [cljsjs/react-leaflet "0.11.4-1"]
                   [org.webjars/font-awesome "4.6.3"]
                   [rum "0.10.4"]])
 
