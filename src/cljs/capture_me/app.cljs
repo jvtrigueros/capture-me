@@ -2,7 +2,7 @@
   (:require [cljsjs.leaflet-locatecontrol]
             [cljsjs.react-leaflet]
             [rum.core :as rum]
-            [sablono.core :as html :refer-macros [html]]))
+            [sablono.core :refer-macros [html]]))
 
 (enable-console-print!)
 
@@ -22,11 +22,13 @@
 
 (rum/defc pokemap < rum/reactive
   []
-  (js/React.createElement js/ReactLeaflet.Map (clj->js {:zoom 13 :center (:position (rum/react app-state))})
-                          (js/React.createElement js/ReactLeaflet.TileLayer (clj->js tilelayer-options))
-                          (js/React.createElement js/ReactLeaflet.Marker (clj->js {:position (:position (rum/react app-state))
-                                                                                   :icon (pokemon-icon 1)})
-                                                  (js/React.createElement js/ReactLeaflet.Popup #js {} (html [:span "Albuquerque"])))))
+  (let [state (rum/react app-state)
+        position (:position state)]
+    (js/React.createElement js/ReactLeaflet.Map (clj->js {:zoom 13 :center position})
+                            (js/React.createElement js/ReactLeaflet.TileLayer (clj->js tilelayer-options))
+                            (js/React.createElement js/ReactLeaflet.Marker (clj->js {:position position
+                                                                                     :icon     (pokemon-icon 1)})
+                                                    (js/React.createElement js/ReactLeaflet.Popup #js {} (html [:span "Albuquerque"]))))))
 
 (rum/defcs spot-button < (rum/local 0 ::offset)
   [state]
