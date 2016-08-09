@@ -42,9 +42,7 @@
            (from-webjars :name "font-awesome/fonts/fontawesome-webfont.woff2"
                          :target "fonts/fontawesome-webfont.woff2")
            (from-webjars :name "font-awesome/fonts/fontawesome-webfont.woff"
-                         :target "fonts/fontawesome-webfont.woff")
-           (from-webjars :name "font-awesome/css/font-awesome.css"
-                         :target "css/font-awesome.css")))
+                         :target "fonts/fontawesome-webfont.woff")))
 
 (deftask run []
          (comp (serve)
