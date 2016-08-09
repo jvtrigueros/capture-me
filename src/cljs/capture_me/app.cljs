@@ -52,17 +52,22 @@
                                                                                      :icon     (pokemon-icon 1)})
                                                     (js/React.createElement js/ReactLeaflet.Popup #js {} (html [:span "Albuquerque"]))))))
 
-(rum/defcs spot-button < (rum/local 0 ::offset)
-  [state]
-  (let [offset (::offset state)]
-    [:button.spot-button {:on-click (fn [_] (do
-                                              (swap! offset #(+ % 0.01))
-                                              (swap! app-state update-in [:position] #(mapv (fn [n] (+ n @offset)) %))))}
-     "Spotted!"]))
+(rum/defc sighted-button
+  "Toggles the map."
+  [show-map]
+  [:button.spot-button {:on-click (fn [_] (do
+                                            (swap! show-map not)))}
+   "Sighted!"])
 
-(rum/defc app
-  []
-  [:div (pokemap) (spot-button) (ds-connector)])
+(rum/defcs app < (rum/local {::show-map false})
+  [state]
+  (let [show-map (rum/cursor (:rum/local state) ::show-map)]
+
+    [:div
+
+     (if @show-map (pokemap))
+     (sighted-button show-map)
+     #_(ds-connector)]))
 
 (defn init []
   (rum/mount
