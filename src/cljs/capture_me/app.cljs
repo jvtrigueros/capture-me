@@ -18,7 +18,29 @@
 
 (defn pokemon-icon [idx]
   (js/L.divIcon #js {:className (str "pokemon pokemon-" idx)
-                     :iconSize #js [40 32]}))
+                     :iconSize  #js [40 32]}))
+
+(def ds-connector-mixin
+  {:init         (fn [state props]
+                   (assoc state ::client (js/deepstream "localhost:6020")))
+   :will-mount   (fn [state]
+                   (let [client (::client state)]
+                     (.login client)
+                     state))
+   :did-mount    (fn [state]
+                   (let [client (::client state)
+                         record (.getRecord (.-record client) "pokemon/1")]
+                     (.subscribe record #(.log js/console %))
+                     state))
+   :will-unmount (fn [state]
+                   (let [client (::client state)]
+                     (println "unmount")
+                     (.close client)
+                     state))})
+
+(rum/defc ds-connector < ds-connector-mixin
+  []
+  [:div])
 
 (rum/defc pokemap < rum/reactive
   []
@@ -40,7 +62,7 @@
 
 (rum/defc app
   []
-  [:div (pokemap) (spot-button)])
+  [:div (pokemap) (spot-button) (ds-connector)])
 
 (defn init []
   (rum/mount
