@@ -11,36 +11,55 @@
     <link rel="stylesheet" href="leaflet-locate.inc.css">
   </head>
   <body>
-    <section class="section">
-      <nav class="nav">
-        <div class="container">
-          <div class="nav-left">
-            <a href="#" class="nav-item">
-              <h2 class="title is-2">Capture Me!</h2>
-            </a>
-          </div>
-
-          <span class="nav-toggle">
-            <span></span>
-            <span></span>
-            <span></span>
-          </span>
-
-          <div class="nav-right nav-menu">
-            <span class="nav-item">
-              <a href="#" class="button is-primary is-medium">
-                <span class="icon is-medium">
-                  <i class="fa fa-question-circle-o"></i>
-                </span>
-                <span>Help</span>
+    <section class="hero is-fullheight">
+      <div class="hero-header">
+        <header class="nav">
+          <div class="container">
+            <div class="nav-left">
+              <a href="#" class="nav-item">
+                <h2 class="title is-2">Capture Me!</h2>
               </a>
+            </div>
+
+            <span class="nav-toggle">
+              <span></span>
+              <span></span>
+              <span></span>
             </span>
+
+            <div class="nav-right nav-menu">
+              <span class="nav-item">
+                <a href="#" class="button is-primary is-medium">
+                  <span class="icon is-medium">
+                    <i class="fa fa-question-circle-o"></i>
+                  </span>
+                  <span>Help</span>
+                </a>
+              </span>
+            </div>
           </div>
+        </header>
+      </div>
+
+      <div class="hero-body">
+        <div class="container">
+          <p class="heading">Time: XX:XX:XX</p>
+          <div id="pokemap"></div>
+          <nav class="level is-mobile">
+            <p class="level-item has-text-centered">
+              <a href="#" class="button is-warning is-fullwidth is-large">Sighted!</a>
+            </p>
+            <p class="level-item has-text-centered">
+              <a href="#" class="button is-success is-fullwidth is-large">Caught!</a>
+            </p>
+          </nav>
         </div>
-      </nav>
+      </div>
+
+      <div class="hero-foot">
+      </div>
     </section>
 
-    <div id="pokemap"></div>
     <script type="text/javascript" src="js/deepstream.js"></script>
     <script type="text/javascript" src="js/app.js"></script>
   </body>
