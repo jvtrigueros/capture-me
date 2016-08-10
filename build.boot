@@ -12,6 +12,8 @@
                   [deraen/boot-sass "0.2.1" :scope "test"]
                   [org.slf4j/slf4j-nop "1.7.13" :scope "test"]
 
+                  [camel-snake-kebab "0.4.0"]
+
                   [org.clojure/clojurescript "1.7.228"]
                   [cljsjs/leaflet-locatecontrol "0.43.0-1"]
                   [cljsjs/react-leaflet "0.11.4-1"]
