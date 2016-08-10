@@ -3,9 +3,12 @@ $primary-color: #333;
 
 body {
   font: 100% $font-stack;
-  color: $primary-color;
 }
 
 #pokemap .leaflet-container {
-  height: 400px;
+  height: 70vh;
+}
+
+.button {
+  border-radius: 0px;
 }

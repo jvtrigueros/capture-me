@@ -59,14 +59,14 @@
                                             (swap! show-map not)))}
    "Sighted!"])
 
-(rum/defcs app < (rum/local {::show-map false})
+(rum/defcs app < (rum/local {::show-map true})
   [state]
   (let [show-map (rum/cursor (:rum/local state) ::show-map)]
 
     [:div
 
      (if @show-map (pokemap))
-     (sighted-button show-map)
+     #_(sighted-button show-map)
      #_(ds-connector)]))
 
 (defn init []
