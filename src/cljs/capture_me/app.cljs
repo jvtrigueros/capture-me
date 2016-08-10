@@ -1,6 +1,7 @@
 (ns capture-me.app
   (:require [cljsjs.leaflet-locatecontrol]
             [cljsjs.react-leaflet]
+            [camel-snake-kebab.core :refer [->kebab-case-string]]
             [rum.core :as rum]
             [sablono.core :refer-macros [html]]))
 
@@ -59,12 +60,36 @@
                                             (swap! show-map not)))}
    "Sighted!"])
 
-(rum/defcs app < (rum/local {::show-map true})
+(rum/defc pokemon-modal
+  [title is-active]
+  (let [inputs ["Pokemon Name" "Location" "Time"]
+        kebab #(->kebab-case-string %)
+        class (if @is-active {:class "is-active"})
+        close #(swap! is-active not)]
+    [:.modal class
+     [:.modal-background {:on-click close}]
+     [:.modal-card
+      [:.modal-card-head
+       [:p.modal-card-title title]
+       [:button.delete {:on-click close}]]
+      [:section.modal-card-body
+       [:.content
+        (map-indexed #(vector :p.control {:key %1}
+                              [:label.label {:for (kebab %2)} %2]
+                              [:input.input {:id (kebab %2) :type "text"}])
+                     inputs)]]
+      [:footer.modal-card-foot
+       [:a.button.is-primary "Save"]
+       [:a.button {:on-click close} "Cancel"]]]]))
+
+(rum/defcs app < (rum/local {::show-map     false
+                             ::show-sighted true})
   [state]
-  (let [show-map (rum/cursor (:rum/local state) ::show-map)]
+  (let [show-map (rum/cursor (:rum/local state) ::show-map)
+        show-sighted (rum/cursor (:rum/local state) ::show-sighted)]
 
     [:div
-
+     (pokemon-modal "Pokemon Sighted!" show-sighted)
      (if @show-map (pokemap))
      #_(sighted-button show-map)
      #_(ds-connector)]))
