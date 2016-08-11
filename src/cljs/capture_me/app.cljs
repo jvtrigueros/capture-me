@@ -60,6 +60,12 @@
                                             (swap! show-map not)))}
    "Sighted!"])
 
+(rum/defc pokemon-button
+  [name class on-click]
+  [:a {:class (str "button card-footer-item is-large " class)
+       :on-click on-click}
+   name])
+
 (rum/defc pokemon-modal
   [title is-active]
   (let [inputs ["Pokemon Name" "Location" "Time"]
