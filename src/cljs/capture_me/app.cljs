@@ -53,13 +53,6 @@
                                                                                      :icon     (pokemon-icon 1)})
                                                     (js/React.createElement js/ReactLeaflet.Popup #js {} (html [:span "Albuquerque"]))))))
 
-(rum/defc sighted-button
-  "Toggles the map."
-  [show-map]
-  [:button.spot-button {:on-click (fn [_] (do
-                                            (swap! show-map not)))}
-   "Sighted!"])
-
 (rum/defc pokemon-button
   [name class on-click]
   [:a {:class    (str "button card-footer-item is-large " class)
