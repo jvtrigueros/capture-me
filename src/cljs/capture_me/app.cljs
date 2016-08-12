@@ -62,7 +62,7 @@
 
 (rum/defc pokemon-button
   [name class on-click]
-  [:a {:class (str "button card-footer-item is-large " class)
+  [:a {:class    (str "button card-footer-item is-large " class)
        :on-click on-click}
    name])
 
@@ -89,18 +89,40 @@
        [:a.button {:on-click close} "Cancel"]]]]))
 
 (rum/defcs app < (rum/local {::show-map     false
-                             ::show-sighted true})
+                             ::show-sighted false})
   [state]
   (let [show-map (rum/cursor (:rum/local state) ::show-map)
         show-sighted (rum/cursor (:rum/local state) ::show-sighted)]
 
     [:div
-     (pokemon-modal "Pokemon Sighted!" show-sighted)
-     (if @show-map (pokemap))
-     #_(sighted-button show-map)
-     #_(ds-connector)]))
+     [:section.hero.is-light
+      [:.hero-head
+       [:nav.nav
+        [:div.container
+
+         [:.nav-left
+          [:a.nav-item.is-brand
+           [:h2.title.is-2 "Capture Me!"]]]
+
+         [:span.nav-toggle [:span] [:span] [:span]]
+
+         [:.nav-right.nav-menu
+          [:span.nav-item
+           [:a.button.is-primary.is-medium
+            [:span.icon.is-medium [:i.fa.fa-question-circle-o]]
+            [:span "Help"]]]]]]]
+
+      [:.hero-body
+       [:nav.columns.is-mobile
+        [:.column [:p.heading "Time: XX:XX:XX"]]]
+       [:.card.is-fullwidth
+        [:.card-image (if @show-map (pokemap))]
+        [:footer.card-footer
+         (pokemon-button "Sighted!" "is-warning" #(swap! show-sighted not))
+         (pokemon-button "Caught!" "is-success" #(swap! show-sighted not))]]]]
+     (pokemon-modal "Pokemon Sighted!" show-sighted)]))
 
 (defn init []
   (rum/mount
     (app)
-    (. js/document (getElementById "pokemap"))))
+    (. js/document (getElementById "app"))))
