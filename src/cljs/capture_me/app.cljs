@@ -7,7 +7,7 @@
 
 (enable-console-print!)
 
-(def app-state (atom {:position     [35.0853 -106.6056]
+(def app-state (atom {:location     [35.0853 -106.6056]
                       :current-time (.getTime (js/Date.))}))
 
 (def tilelayer-options
@@ -47,10 +47,10 @@
 (rum/defc pokemap < rum/reactive
   []
   (let [state (rum/react app-state)
-        position (:position state)]
+        position (:location state)]
     (js/React.createElement js/ReactLeaflet.Map (clj->js {:zoom 13 :center position :id "pokemap"})
                             (js/React.createElement js/ReactLeaflet.TileLayer (clj->js tilelayer-options))
-                            (js/React.createElement js/ReactLeaflet.Marker (clj->js {:position position
+                            (js/React.createElement js/ReactLeaflet.Marker (clj->js {:location position
                                                                                      :icon     (pokemon-icon 1)})
                                                     (js/React.createElement js/ReactLeaflet.Popup #js {} (html [:span "Albuquerque"]))))))
 
