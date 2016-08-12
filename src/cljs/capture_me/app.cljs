@@ -73,7 +73,7 @@
 
 (rum/defc pokemon-modal
   [title is-active]
-  (let [inputs ["Pokemon Name" "Location" "Time"]
+  (let [inputs [["Pokemon Name"] ["Location"] ["Time" (:current-time @app-state)]]
         kebab #(->kebab-case-string %)
         class (if @is-active {:class "is-active"})
         close #(swap! is-active not)]
@@ -85,9 +85,15 @@
        [:button.delete {:on-click close}]]
       [:section.modal-card-body
        [:.content
-        (map-indexed #(vector :p.control {:key %1}
-                              [:label.label {:for (kebab %2)} %2]
-                              [:input.input {:id (kebab %2) :type "text"}])
+        (map-indexed (fn [idx input]
+                       (let [label (first input)
+                             id (kebab label)
+                             value (second input)]
+                         (vector :p.control {:key idx}
+                                 [:label.label {:for id} label]
+                                 [:input.input {:id    id
+                                                :value value
+                                                :type  "text"}])))
                      inputs)]]
       [:footer.modal-card-foot
        [:a.button.is-primary "Save"]
