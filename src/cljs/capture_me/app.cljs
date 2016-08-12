@@ -7,7 +7,8 @@
 
 (enable-console-print!)
 
-(def app-state (atom {:position [35.0853 -106.6056]}))
+(def app-state (atom {:position     [35.0853 -106.6056]
+                      :current-time (.getTime (js/Date.))}))
 
 (def tilelayer-options
   {:url         "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}"
@@ -52,6 +53,17 @@
                             (js/React.createElement js/ReactLeaflet.Marker (clj->js {:position position
                                                                                      :icon     (pokemon-icon 1)})
                                                     (js/React.createElement js/ReactLeaflet.Popup #js {} (html [:span "Albuquerque"]))))))
+
+(rum/defc timer < rum/reactive
+                  {:will-mount   (fn [state]
+                                   (let [current-time (rum/cursor app-state :current-time)]
+                                     (assoc state ::interval-id (js/setInterval #(reset! current-time (.getTime (js/Date.))) 1000))))
+                   :will-unmount (fn [state]
+                                   (do
+                                     (js/clearInterval (::interval-id state))
+                                     (assoc state ::interval-id nil)))}
+  []
+  [:p.heading (str "Time: " (:current-time (rum/react app-state)))])
 
 (rum/defc pokemon-button
   [name class on-click]
@@ -107,7 +119,7 @@
 
       [:.hero-body
        [:nav.columns.is-mobile
-        [:.column [:p.heading "Time: XX:XX:XX"]]]
+        [:.column (timer)]]
        [:.card.is-fullwidth
         [:.card-image (if @show-map (pokemap))]
         [:footer.card-footer
