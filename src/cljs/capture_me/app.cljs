@@ -100,10 +100,12 @@
        [:a.button {:on-click close} "Cancel"]]]]))
 
 (rum/defcs app < (rum/local {::show-map     true
-                             ::show-sighted false})
+                             ::show-sighted false
+                             ::toggle-menu  false})
   [state]
   (let [show-map (rum/cursor (:rum/local state) ::show-map)
-        show-sighted (rum/cursor (:rum/local state) ::show-sighted)]
+        show-sighted (rum/cursor (:rum/local state) ::show-sighted)
+        toggle-menu (rum/cursor (:rum/local state) ::toggle-menu)]
 
     [:div
      [:section.hero.is-light
@@ -115,9 +117,11 @@
           [:a.nav-item.is-brand
            [:h2.title.is-2 "Capture Me!"]]]
 
-         [:span.nav-toggle [:span] [:span] [:span]]
+         [:span {:class (str "nav-toggle" (if @toggle-menu " is-active"))
+                 :on-click #(swap! toggle-menu not)}
+          [:span] [:span] [:span]]
 
-         [:.nav-right.nav-menu
+         [:div {:class (str "nav-right nav-menu" (if @toggle-menu " is-active"))}
           [:span.nav-item
            [:a.button.is-primary.is-medium
             [:span.icon.is-medium [:i.fa.fa-question-circle-o]]
