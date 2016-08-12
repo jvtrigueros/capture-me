@@ -47,7 +47,7 @@
   []
   (let [state (rum/react app-state)
         position (:position state)]
-    (js/React.createElement js/ReactLeaflet.Map (clj->js {:zoom 13 :center position})
+    (js/React.createElement js/ReactLeaflet.Map (clj->js {:zoom 13 :center position :id "pokemap"})
                             (js/React.createElement js/ReactLeaflet.TileLayer (clj->js tilelayer-options))
                             (js/React.createElement js/ReactLeaflet.Marker (clj->js {:position position
                                                                                      :icon     (pokemon-icon 1)})
@@ -88,7 +88,7 @@
        [:a.button.is-primary "Save"]
        [:a.button {:on-click close} "Cancel"]]]]))
 
-(rum/defcs app < (rum/local {::show-map     false
+(rum/defcs app < (rum/local {::show-map     true
                              ::show-sighted false})
   [state]
   (let [show-map (rum/cursor (:rum/local state) ::show-map)
