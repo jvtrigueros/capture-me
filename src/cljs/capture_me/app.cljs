@@ -52,7 +52,6 @@
                                         (.locate #js {:position "topright" :icon "fa fa-location-arrow" :strings #js {:title "Where am I?"}})
                                         (.addTo leaflet-element))
                                     state))}
-
   []
   (let [state (rum/react app-state)
         position (:location state)]

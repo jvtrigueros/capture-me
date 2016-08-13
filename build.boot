@@ -75,3 +75,10 @@
          []
          (comp (development)
                (run)))
+
+(deftask prod
+         []
+         "Simple alias to mimic production mode."
+         (comp (production)
+               (build)
+               (sift :include #{#"\.out"} :invert true)))
