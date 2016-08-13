@@ -45,7 +45,7 @@
 
 (deftask build []
          (comp (from-cljsjs)
-               (sift :to-resource #{#"leaflet(.+?).inc.css"})
+               (sift :to-resource #{#"leaflet(.+?)inc.css"})
                (sift :move {#"^(leaflet.+?)inc.css" "css/$1css"})
                (deepstream-client-js)
                (fontawesome)
