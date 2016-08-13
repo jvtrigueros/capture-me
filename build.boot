@@ -29,29 +29,33 @@
   '[pandeiro.boot-http :refer [serve]]
   '[deraen.boot-sass :refer [sass]])
 
-(deftask build []
-         (comp (speak)
-               (cljs)
-               (sass)))
-
 (deftask deepstream-client-js []
          (comp
            (from-webjars :name "deepstream.io-client-js/dist/deepstream.js"
-                         :target "js/deepstream.js")))
+                         :target "js/deepstream.js")
+           (sift :to-resource #{#"deepstream.js"})))
 
 (deftask fontawesome []
          (comp
            (from-webjars :name "font-awesome/fonts/fontawesome-webfont.woff2"
                          :target "fonts/fontawesome-webfont.woff2")
            (from-webjars :name "font-awesome/fonts/fontawesome-webfont.woff"
-                         :target "fonts/fontawesome-webfont.woff")))
+                         :target "fonts/fontawesome-webfont.woff")
+           (sift :to-resource #{#"woff.?$"})))
+
+(deftask build []
+         (comp (from-cljsjs)
+               (sift :to-resource #{#"leaflet(.+?).inc.css"})
+               (sift :move {#"^(leaflet.+?)inc.css" "css/$1css"})
+               (deepstream-client-js)
+               (fontawesome)
+               (speak)
+               (cljs)
+               (sass)))
 
 (deftask run []
          (comp (serve)
                (watch)
-               (from-cljsjs)
-               (deepstream-client-js)
-               (fontawesome)
                (cljs-repl)
                (reload)
                (build)))
