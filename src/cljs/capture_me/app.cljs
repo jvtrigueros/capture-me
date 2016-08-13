@@ -74,10 +74,11 @@
   [:p.heading (str "Time: " (:current-time (rum/react app-state)))])
 
 (rum/defc pokemon-button
-  [name class on-click]
-  [:a {:class    (str "button card-footer-item is-large " class)
-       :on-click on-click}
-   name])
+  [name class img on-click]
+  [:a {:class    (str "pokemon-button " class)
+       :on-click on-click
+       :key      name}
+   [:span.image.is-48x48 [:img {:src img}]]])
 
 (rum/defc pokemon-modal
   [title is-active]
@@ -125,7 +126,7 @@
           [:a.nav-item.is-brand
            [:h2.title.is-2 "Capture Me!"]]]
 
-         [:span {:class (str "nav-toggle" (if @toggle-menu " is-active"))
+         [:span {:class    (str "nav-toggle" (if @toggle-menu " is-active"))
                  :on-click #(swap! toggle-menu not)}
           [:span] [:span] [:span]]
 
@@ -141,8 +142,9 @@
        [:.card.is-fullwidth
         [:.card-image (if @show-map (pokemap))]
         [:footer.card-footer
-         (pokemon-button "Sighted!" "is-warning" #(swap! show-sighted not))
-         (pokemon-button "Caught!" "is-success" #(swap! show-sighted not))]]]]
+         (pokemon-button "PokéGym" "card-footer-item" "img/pokemon.svg" #(swap! show-sighted not))
+         (pokemon-button "PokéStop" "card-footer-item" "img/pokestop.svg" #(swap! show-sighted not))
+         (pokemon-button "Pokémon" "card-footer-item" "img/pokegym.svg" #(swap! show-sighted not))]]]]
      (pokemon-modal "Pokemon Sighted!" show-sighted)]))
 
 (defn init []
