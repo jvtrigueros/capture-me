@@ -5,70 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="">
   <title>Capture Me ~ LIVE ~</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.1.2/css/bulma.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.1.2/css/bulma.css" rel="stylesheet">
   <link href="css/app.css" rel="stylesheet" type="text/css" media="screen">
-  <link rel="stylesheet" href="leaflet.inc.css">
-  <link rel="stylesheet" href="leaflet-locate.inc.css">
+  <link href="css/leaflet.css" rel="stylesheet" type="text/css">
+  <link href="css/leaflet-locate.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<section class="hero is-light">
-  <div class="hero-head">
-    <nav class="nav">
-      <div class="container">
-        <div class="nav-left">
-          <a href="#" class="nav-item is-brand">
-            <h2 class="title is-2">Capture Me!</h2>
-          </a>
-        </div>
-
-        <span class="nav-toggle">
-      <span></span>
-      <span></span>
-      <span></span>
-    </span>
-
-        <div class="nav-right nav-menu">
-      <span class="nav-item">
-        <a href="#" class="button is-primary is-medium">
-          <span class="icon is-medium">
-            <i class="fa fa-question-circle-o"></i>
-          </span>
-          <span>Help</span>
-        </a>
-      </span>
-        </div>
-      </div>
-    </nav>
-  </div>
-
-  <div class="hero-body">
-    <nav class="columns is-mobile">
-      <div class="column">
-        <p class="heading">Time: XX:XX:XX</p>
-      </div>
-
-      <!--
-      TODO: Once we can actually filter, I'll add that here.
-      <div class="column">
-        <p class="control has-addons is-pulled-right">
-          <input type="text" class="input">
-          <button class="button">Filter</button>
-        </p>
-      </div>
-      -->
-    </nav>
-    <div class="card is-fullwidth">
-      <div class="card-image">
-        <div id="pokemap"></div>
-      </div>
-      <footer class="card-footer">
-        <a href="#" class="button card-footer-item is-warning is-large">Sighted!</a>
-        <a href="#" class="button card-footer-item is-success is-large">Caught!</a>
-      </footer>
-    </div>
-  </div>
-</section>
-
+<div id="app"></div>
 <script type="text/javascript" src="js/deepstream.js"></script>
 <script type="text/javascript" src="js/app.js"></script>
 </body>

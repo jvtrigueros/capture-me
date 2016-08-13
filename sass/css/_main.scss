@@ -5,10 +5,20 @@ body {
   font: 100% $font-stack;
 }
 
-#pokemap .leaflet-container {
+#pokemap.leaflet-container {
   height: 70vh;
 }
 
 .button {
   border-radius: 0;
+}
+
+.pokemon-button:hover {
+  background-color: rgb(244, 244, 244);
+}
+
+.leaflet-control-locate .fa {
+  font-weight: bold;
+  font-size: 1.0em;
+  vertical-align: baseline;
 }
