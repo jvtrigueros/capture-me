@@ -61,7 +61,7 @@
                (build)))
 
 (deftask production []
-         (task-options! cljs {:optimizations :advanced}
+         (task-options! cljs {:optimizations :simple}
                         sass {:output-style :compressed})
          identity)
 
