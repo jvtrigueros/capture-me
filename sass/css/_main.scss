@@ -13,6 +13,10 @@ body {
   border-radius: 0;
 }
 
+.pokemon-button:hover {
+  background-color: rgb(244, 244, 244);
+}
+
 .leaflet-control-locate .fa {
   font-size: 1.5em;
   vertical-align: middle;
