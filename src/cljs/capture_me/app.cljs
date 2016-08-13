@@ -1,6 +1,6 @@
 (ns capture-me.app
-  (:require [cljsjs.leaflet-locatecontrol]
-            [cljsjs.react-leaflet]
+  (:require [cljsjs.react-leaflet]
+            [cljsjs.leaflet-locatecontrol]
             [camel-snake-kebab.core :refer [->kebab-case-string]]
             [rum.core :as rum]
             [sablono.core :refer-macros [html]]))
@@ -45,12 +45,20 @@
   [:div])
 
 (rum/defc pokemap < rum/reactive
+                    {:did-mount (fn [state]
+                                  (let [leaflet-element (.getLeafletElement (rum/ref state "poke"))]
+                                    (-> js/L
+                                        .-control
+                                        (.locate #js {:position "topright" :icon "fa fa-location-arrow" :strings #js {:title "Where am I?"}})
+                                        (.addTo leaflet-element))
+                                    state))}
+
   []
   (let [state (rum/react app-state)
         position (:location state)]
-    (js/React.createElement js/ReactLeaflet.Map (clj->js {:zoom 13 :center position :id "pokemap"})
+    (js/React.createElement js/ReactLeaflet.Map (clj->js {:zoom 13 :center position :id "pokemap" :ref "poke"})
                             (js/React.createElement js/ReactLeaflet.TileLayer (clj->js tilelayer-options))
-                            (js/React.createElement js/ReactLeaflet.Marker (clj->js {:location position
+                            (js/React.createElement js/ReactLeaflet.Marker (clj->js {:position position
                                                                                      :icon     (pokemon-icon 1)})
                                                     (js/React.createElement js/ReactLeaflet.Popup #js {} (html [:span "Albuquerque"]))))))
 
