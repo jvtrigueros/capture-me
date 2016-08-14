@@ -5,4 +5,4 @@
   [string]
   (-> string
       str/lower-case
-      (str/replace "\s" "-")))
+      (str/replace " " "-")))
