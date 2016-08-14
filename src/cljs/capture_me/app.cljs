@@ -1,7 +1,7 @@
 (ns capture-me.app
   (:require [cljsjs.react-leaflet]
             [cljsjs.leaflet-locatecontrol]
-            [camel-snake-kebab.core :refer [->kebab-case-string]]
+            [capture-me.util :refer [->kebab-case-string]]
             [rum.core :as rum]
             [sablono.core :refer-macros [html]]))
 
