@@ -29,9 +29,9 @@
 
 (deftask deepstream-client-js []
          (comp
-           (from-webjars :name "deepstream.io-client-js/dist/deepstream.js"
-                         :target "js/deepstream.js")
-           (sift :to-resource #{#"deepstream.js"})))
+           (from-webjars :name "deepstream.io-client-js/dist/deepstream.min.js"
+                         :target "js/deepstream.min.js")
+           (sift :to-resource #{#"deepstream.min.js"})))
 
 (deftask fontawesome []
          (comp
