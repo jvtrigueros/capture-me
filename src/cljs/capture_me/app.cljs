@@ -72,9 +72,9 @@
   []
   [:p.heading (str "Time: " (:current-time (rum/react app-state)))])
 
-(rum/defc pokemon-modal < rum/reactive
+(rum/defc poke-modal < rum/reactive
   [title is-active]
-  (let [inputs [["Pokemon Name"] ["Location"] ["Time" (:current-time @app-state)]]
+  (let [inputs [[title] ["Location"]]
         kebab #(->kebab-case-string %)
         class (if (rum/react is-active) {:class "is-active"})
         close #(swap! is-active not)]
@@ -82,7 +82,7 @@
      [:.modal-background {:on-click close}]
      [:.modal-card
       [:.modal-card-head
-       [:p.modal-card-title title]
+       [:p.modal-card-title (str "Add " title)]
        [:button.delete {:on-click close}]]
       [:section.modal-card-body
        [:.content
@@ -100,14 +100,13 @@
        [:a.button.is-primary "Save"]
        [:a.button {:on-click close} "Cancel"]]]]))
 
-(rum/defcs pokemon-icon < rum/static
-                          (rum/local false ::is-active)
-  [state name img]
+(rum/defcs pokemon-action < rum/static
+                            (rum/local false ::is-active)
+  [state title img]
   (let [is-active (::is-active state)]
     [:div
-     (pokemon-modal name is-active)
-     [:a {:on-click #(swap! is-active not)
-          :key      name}
+     (poke-modal title is-active)
+     [:a {:on-click #(swap! is-active not)}
       [:span.image.is-48x48 [:img {:src img}]]]]))
 
 (rum/defcs app < (rum/local {::show-map         true
@@ -115,7 +114,6 @@
   [state]
   (let [show-map (rum/cursor (:rum/local state) ::show-map)
         toggle-menu (rum/cursor (:rum/local state) ::toggle-menu)]
-
     [:div
      [:section.hero.is-light
       [:.hero-head
@@ -142,9 +140,9 @@
        [:.card.is-fullwidth
         [:.card-image (if @show-map (pokemap))]
         [:footer.card-footer
-         [:.card-footer-item.pokemon-button (pokemon-icon "Pokémon Sighted!" "img/pokemon.svg")]
-         [:.card-footer-item.pokemon-button (pokemon-icon "Add Pokéstop" "img/pokestop.svg")]
-         [:.card-footer-item.pokemon-button (pokemon-icon "Add Gym" "img/pokegym.svg")]]]]]]))
+         [:.card-footer-item.pokemon-button (pokemon-action "Pokémon" "img/pokemon.svg")]
+         [:.card-footer-item.pokemon-button (pokemon-action "Pokéstop" "img/pokestop.svg")]
+         [:.card-footer-item.pokemon-button (pokemon-action "Pokégym" "img/pokegym.svg")]]]]]]))
 
 (defn init []
   (rum/mount
