@@ -18,7 +18,7 @@
    :accessToken "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw"
    :attribution "© <a href='https://www.mapbox.com/map-feedback/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"})
 
-(defn pokemon-icon [idx]
+(defn pokemon-div-icon [idx]
   (js/L.divIcon #js {:className (str "pokemon pokemon-" idx)
                      :iconSize  #js [40 32]}))
 
@@ -58,7 +58,7 @@
     (js/React.createElement js/ReactLeaflet.Map (clj->js {:zoom 13 :center position :id "pokemap" :ref "poke"})
                             (js/React.createElement js/ReactLeaflet.TileLayer (clj->js tilelayer-options))
                             (js/React.createElement js/ReactLeaflet.Marker (clj->js {:position position
-                                                                                     :icon     (pokemon-icon 1)})
+                                                                                     :icon     (pokemon-div-icon 1)})
                                                     (js/React.createElement js/ReactLeaflet.Popup #js {} (html [:span "Albuquerque"]))))))
 
 (rum/defc timer < rum/reactive
@@ -72,18 +72,11 @@
   []
   [:p.heading (str "Time: " (:current-time (rum/react app-state)))])
 
-(rum/defc pokemon-button
-  [name class img on-click]
-  [:a {:class    (str "pokemon-button " class)
-       :on-click on-click
-       :key      name}
-   [:span.image.is-48x48 [:img {:src img}]]])
-
-(rum/defc pokemon-modal
+(rum/defc pokemon-modal < rum/reactive
   [title is-active]
   (let [inputs [["Pokemon Name"] ["Location"] ["Time" (:current-time @app-state)]]
         kebab #(->kebab-case-string %)
-        class (if @is-active {:class "is-active"})
+        class (if (rum/react is-active) {:class "is-active"})
         close #(swap! is-active not)]
     [:.modal class
      [:.modal-background {:on-click close}]
@@ -107,12 +100,20 @@
        [:a.button.is-primary "Save"]
        [:a.button {:on-click close} "Cancel"]]]]))
 
-(rum/defcs app < (rum/local {::show-map     true
-                             ::show-sighted false
-                             ::toggle-menu  false})
+(rum/defcs pokemon-icon < rum/static
+                          (rum/local false ::is-active)
+  [state name img]
+  (let [is-active (::is-active state)]
+    [:div
+     (pokemon-modal name is-active)
+     [:a {:on-click #(swap! is-active not)
+          :key      name}
+      [:span.image.is-48x48 [:img {:src img}]]]]))
+
+(rum/defcs app < (rum/local {::show-map         true
+                             ::toggle-menu      false})
   [state]
   (let [show-map (rum/cursor (:rum/local state) ::show-map)
-        show-sighted (rum/cursor (:rum/local state) ::show-sighted)
         toggle-menu (rum/cursor (:rum/local state) ::toggle-menu)]
 
     [:div
@@ -141,10 +142,9 @@
        [:.card.is-fullwidth
         [:.card-image (if @show-map (pokemap))]
         [:footer.card-footer
-         (pokemon-button "PokéGym" "card-footer-item" "img/pokemon.svg" #(swap! show-sighted not))
-         (pokemon-button "PokéStop" "card-footer-item" "img/pokestop.svg" #(swap! show-sighted not))
-         (pokemon-button "Pokémon" "card-footer-item" "img/pokegym.svg" #(swap! show-sighted not))]]]]
-     (pokemon-modal "Pokemon Sighted!" show-sighted)]))
+         [:.card-footer-item.pokemon-button (pokemon-icon "Pokémon Sighted!" "img/pokemon.svg")]
+         [:.card-footer-item.pokemon-button (pokemon-icon "Add Pokéstop" "img/pokestop.svg")]
+         [:.card-footer-item.pokemon-button (pokemon-icon "Add Gym" "img/pokegym.svg")]]]]]]))
 
 (defn init []
   (rum/mount
