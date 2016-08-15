@@ -15,6 +15,7 @@
                   [org.clojure/clojurescript "1.7.228"]
                   [cljsjs/leaflet-locatecontrol "0.43.0-1"]
                   [cljsjs/react-leaflet "0.11.4-1"]
+                  [cljsjs/moment "2.10.6-4"]
                   [org.webjars/font-awesome "4.6.3"]
                   [org.webjars.bower/deepstream.io-client-js "1.0.2"]
                   [rum "0.10.4"]])
