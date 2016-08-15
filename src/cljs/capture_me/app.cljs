@@ -1,6 +1,7 @@
 (ns capture-me.app
   (:require [cljsjs.react-leaflet]
             [cljsjs.leaflet-locatecontrol]
+            [cljsjs.moment]
             [capture-me.util :refer [->kebab-case-string]]
             [rum.core :as rum]
             [sablono.core :refer-macros [html]]))
@@ -8,7 +9,7 @@
 (enable-console-print!)
 
 (def app-state (atom {:location     [35.0853 -106.6056]
-                      :current-time (.getTime (js/Date.))}))
+                      :current-time (js/moment)}))
 
 (def tilelayer-options
   {:url         "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}"
@@ -64,20 +65,22 @@
 (rum/defc timer < rum/reactive
                   {:will-mount   (fn [state]
                                    (let [current-time (rum/cursor app-state :current-time)]
-                                     (assoc state ::interval-id (js/setInterval #(reset! current-time (.getTime (js/Date.))) 1000))))
+                                     (assoc state ::interval-id (js/setInterval (fn [] (swap! current-time #(.add % 1 "s"))) 1000))))
                    :will-unmount (fn [state]
                                    (do
                                      (js/clearInterval (::interval-id state))
                                      (assoc state ::interval-id nil)))}
   []
-  [:p.heading (str "Time: " (:current-time (rum/react app-state)))])
+  [:p.heading (.format (:current-time (rum/react app-state)) "dddd, MMMM Do YYYY, h:mm:ss a")])
 
 (rum/defc poke-modal < rum/reactive
   [title is-active]
   (let [inputs [[title] ["Location"]]
         kebab #(->kebab-case-string %)
         class (if (rum/react is-active) {:class "is-active"})
-        close #(swap! is-active not)]
+        close #(swap! is-active not)
+        timestamp (.unix (:current-time @app-state))]
+    (println (str "modal " title ":") timestamp)
     [:.modal class
      [:.modal-background {:on-click close}]
      [:.modal-card
