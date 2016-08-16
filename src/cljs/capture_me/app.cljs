@@ -19,10 +19,6 @@
    :accessToken "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw"
    :attribution "© <a href='https://www.mapbox.com/map-feedback/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"})
 
-(defn pokemon-div-icon [idx]
-  (js/L.divIcon #js {:className (str "pokemon pokemon-" idx)
-                     :iconSize  #js [40 32]}))
-
 (def ds-connector-mixin
   {:init         (fn [state props]
                    (assoc state ::client (js/deepstream "localhost:6020")))
@@ -41,6 +37,19 @@
                      (.close client)
                      state))})
 
+(def locate-control-mixin
+  {:did-mount (fn [state]
+                (let [leaflet-element (::leaflet-element state)]
+                  (-> js/L
+                      .-control
+                      (.locate #js {:position "topright" :icon "fa fa-location-arrow" :strings #js {:title "Where am I?"}})
+                      (.addTo leaflet-element))
+                  state))})
+
+(defn pokemon-div-icon [idx]
+  (js/L.divIcon #js {:className (str "pokemon pokemon-" idx)
+                     :iconSize  #js [40 32]}))
+
 (rum/defc ds-connector < ds-connector-mixin
   []
   [:div])
@@ -48,11 +57,8 @@
 (rum/defc pokemap < rum/reactive
                     {:did-mount (fn [state]
                                   (let [leaflet-element (.getLeafletElement (rum/ref state "poke"))]
-                                    (-> js/L
-                                        .-control
-                                        (.locate #js {:position "topright" :icon "fa fa-location-arrow" :strings #js {:title "Where am I?"}})
-                                        (.addTo leaflet-element))
-                                    state))}
+                                    (assoc state ::leaflet-element leaflet-element)))}
+                    locate-control-mixin
   []
   (let [state (rum/react app-state)
         position (:location state)]
