@@ -57,7 +57,7 @@
                      state))
    :will-unmount (fn [state]
                    (let [leaflet-element (::leaflet-element state)]
-                     (.off leaflet-element ("move")) 
+                     (.off leaflet-element ("move"))
                      state))})
 
 (defn pokemon-div-icon [idx]
