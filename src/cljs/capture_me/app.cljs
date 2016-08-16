@@ -39,25 +39,25 @@
 
 (def locate-control-mixin
   {:did-mount (fn [state]
-                (let [leaflet-element (::leaflet-element state)]
+                (let [map (::leaflet-element state)]
                   (-> js/L
                       .-control
                       (.locate #js {:position "topright" :icon "fa fa-location-arrow" :strings #js {:title "Where am I?"}})
-                      (.addTo leaflet-element))
+                      (.addTo map))
                   state))})
 
 (def crosshairs-mixin
   {:did-mount    (fn [state]
-                   (let [leaflet-element (::leaflet-element state)
+                   (let [map (::leaflet-element state)
                          crosshairs-icon (js/L.divIcon #js {:className "fa fa-crosshairs"})
-                         get-center #(.getCenter leaflet-element)
+                         get-center #(.getCenter map)
                          crosshairs (js/L.marker (get-center) #js {:icon crosshairs-icon :clickable false})]
-                     (.addTo crosshairs leaflet-element)
-                     (.on leaflet-element "move" #(.setLatLng crosshairs (get-center)))
+                     (.addTo crosshairs map)
+                     (.on map "move" #(.setLatLng crosshairs (get-center)))
                      state))
    :will-unmount (fn [state]
-                   (let [leaflet-element (::leaflet-element state)]
-                     (.off leaflet-element ("move"))
+                   (let [map (::leaflet-element state)]
+                     (.off map ("move"))
                      state))})
 
 (defn pokemon-div-icon [idx]
@@ -70,8 +70,8 @@
 
 (rum/defc pokemap < rum/reactive
                     {:did-mount (fn [state]
-                                  (let [leaflet-element (.getLeafletElement (rum/ref state "poke"))]
-                                    (assoc state ::leaflet-element leaflet-element)))}
+                                  (let [map (.getLeafletElement (rum/ref state "poke"))]
+                                    (assoc state ::leaflet-element map)))}
                     locate-control-mixin
                     crosshairs-mixin
   []
