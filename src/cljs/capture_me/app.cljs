@@ -15,13 +15,9 @@
   {:url         "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}"
    :maxZoom     18
    :minZoom     10
-   :id          "mapbox.streets"
+   :id          "mapbox.high-contrast"
    :accessToken "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw"
    :attribution "© <a href='https://www.mapbox.com/map-feedback/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"})
-
-(defn pokemon-div-icon [idx]
-  (js/L.divIcon #js {:className (str "pokemon pokemon-" idx)
-                     :iconSize  #js [40 32]}))
 
 (def ds-connector-mixin
   {:init         (fn [state props]
@@ -41,18 +37,43 @@
                      (.close client)
                      state))})
 
+(def locate-control-mixin
+  {:did-mount (fn [state]
+                (let [map (::leaflet-element state)]
+                  (-> js/L
+                      .-control
+                      (.locate #js {:position "topright" :icon "fa fa-location-arrow" :strings #js {:title "Where am I?"}})
+                      (.addTo map))
+                  state))})
+
+(def crosshairs-mixin
+  {:did-mount    (fn [state]
+                   (let [map (::leaflet-element state)
+                         crosshairs-icon (js/L.divIcon #js {:className "fa fa-crosshairs"})
+                         get-center #(.getCenter map)
+                         crosshairs (js/L.marker (get-center) #js {:icon crosshairs-icon :clickable false})]
+                     (.addTo crosshairs map)
+                     (.on map "move" #(.setLatLng crosshairs (get-center)))
+                     state))
+   :will-unmount (fn [state]
+                   (let [map (::leaflet-element state)]
+                     (.off map ("move"))
+                     state))})
+
+(defn pokemon-div-icon [idx]
+  (js/L.divIcon #js {:className (str "pokemon pokemon-" idx)
+                     :iconSize  #js [40 32]}))
+
 (rum/defc ds-connector < ds-connector-mixin
   []
   [:div])
 
 (rum/defc pokemap < rum/reactive
                     {:did-mount (fn [state]
-                                  (let [leaflet-element (.getLeafletElement (rum/ref state "poke"))]
-                                    (-> js/L
-                                        .-control
-                                        (.locate #js {:position "topright" :icon "fa fa-location-arrow" :strings #js {:title "Where am I?"}})
-                                        (.addTo leaflet-element))
-                                    state))}
+                                  (let [map (.getLeafletElement (rum/ref state "poke"))]
+                                    (assoc state ::leaflet-element map)))}
+                    locate-control-mixin
+                    crosshairs-mixin
   []
   (let [state (rum/react app-state)
         position (:location state)]
@@ -112,8 +133,8 @@
      [:a {:on-click #(swap! is-active not)}
       [:span.image.is-48x48 [:img {:src img}]]]]))
 
-(rum/defcs app < (rum/local {::show-map         true
-                             ::toggle-menu      false})
+(rum/defcs app < (rum/local {::show-map    true
+                             ::toggle-menu false})
   [state]
   (let [show-map (rum/cursor (:rum/local state) ::show-map)
         toggle-menu (rum/cursor (:rum/local state) ::toggle-menu)]
