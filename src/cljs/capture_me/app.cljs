@@ -47,15 +47,18 @@
                   state))})
 
 (def crosshairs-mixin
-  {:did-mount (fn [state]
-                (let [leaflet-element (::leaflet-element state)
-                      crosshairs-icon (js/L.divIcon #js {:className "fa fa-crosshairs"})
-                      get-center #(.getCenter leaflet-element)
-                      crosshairs (js/L.marker (get-center) #js {:icon crosshairs-icon :clickable false})]
-                  (.addTo crosshairs leaflet-element)
-                  (.on leaflet-element "move" #(.setLatLng crosshairs (get-center)))
-
-                  state))})
+  {:did-mount    (fn [state]
+                   (let [leaflet-element (::leaflet-element state)
+                         crosshairs-icon (js/L.divIcon #js {:className "fa fa-crosshairs"})
+                         get-center #(.getCenter leaflet-element)
+                         crosshairs (js/L.marker (get-center) #js {:icon crosshairs-icon :clickable false})]
+                     (.addTo crosshairs leaflet-element)
+                     (.on leaflet-element "move" #(.setLatLng crosshairs (get-center)))
+                     state))
+   :will-unmount (fn [state]
+                   (let [leaflet-element (::leaflet-element state)]
+                     (.off leaflet-element ("move")) 
+                     state))})
 
 (defn pokemon-div-icon [idx]
   (js/L.divIcon #js {:className (str "pokemon pokemon-" idx)
@@ -130,8 +133,8 @@
      [:a {:on-click #(swap! is-active not)}
       [:span.image.is-48x48 [:img {:src img}]]]]))
 
-(rum/defcs app < (rum/local {::show-map         true
-                             ::toggle-menu      false})
+(rum/defcs app < (rum/local {::show-map    true
+                             ::toggle-menu false})
   [state]
   (let [show-map (rum/cursor (:rum/local state) ::show-map)
         toggle-menu (rum/cursor (:rum/local state) ::toggle-menu)]
