@@ -15,7 +15,7 @@
   {:url         "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}"
    :maxZoom     18
    :minZoom     10
-   :id          "mapbox.streets"
+   :id          "mapbox.high-contrast"
    :accessToken "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw"
    :attribution "© <a href='https://www.mapbox.com/map-feedback/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"})
 
@@ -46,6 +46,17 @@
                       (.addTo leaflet-element))
                   state))})
 
+(def crosshairs-mixin
+  {:did-mount (fn [state]
+                (let [leaflet-element (::leaflet-element state)
+                      crosshairs-icon (js/L.divIcon #js {:className "fa fa-crosshairs"})
+                      get-center #(.getCenter leaflet-element)
+                      crosshairs (js/L.marker (get-center) #js {:icon crosshairs-icon :clickable false})]
+                  (.addTo crosshairs leaflet-element)
+                  (.on leaflet-element "move" #(.setLatLng crosshairs (get-center)))
+
+                  state))})
+
 (defn pokemon-div-icon [idx]
   (js/L.divIcon #js {:className (str "pokemon pokemon-" idx)
                      :iconSize  #js [40 32]}))
@@ -59,6 +70,7 @@
                                   (let [leaflet-element (.getLeafletElement (rum/ref state "poke"))]
                                     (assoc state ::leaflet-element leaflet-element)))}
                     locate-control-mixin
+                    crosshairs-mixin
   []
   (let [state (rum/react app-state)
         position (:location state)]
