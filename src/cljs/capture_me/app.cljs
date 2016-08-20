@@ -95,8 +95,8 @@
   [:p.heading (.format (:current-time (rum/react app-state)) "dddd, MMMM Do YYYY, h:mm:ss a")])
 
 (rum/defc poke-modal < rum/reactive
-  [title is-active]
-  (let [inputs [[title] ["Location"]]
+  [title datalist is-active]
+  (let [inputs [[title datalist] ["Location"]]
         kebab #(->kebab-case-string %)
         class (if (rum/react is-active) {:class "is-active"})
         close #(swap! is-active not)
@@ -113,12 +113,15 @@
         (map-indexed (fn [idx input]
                        (let [label (first input)
                              id (kebab label)
-                             value (second input)]
+                             data (second input)]
                          (vector :p.control {:key idx}
                                  [:label.label {:for id} label]
-                                 [:input.input {:id    id
-                                                :value value
-                                                :type  "text"}])))
+                                 [:input.input {:name id
+                                                :list id
+                                                :type "text"}]
+                                 [:datalist {:id id}
+                                  (map-indexed #(vector :option {:value %2 :key %1}) data)])))
+
                      inputs)]]
       [:footer.modal-card-foot
        [:a.button.is-primary "Save"]
@@ -129,7 +132,7 @@
   [state title img]
   (let [is-active (::is-active state)]
     [:div
-     (poke-modal title is-active)
+     (poke-modal title ["bulba" "moltres" "pikachu"] is-active)
      [:a {:on-click #(swap! is-active not)}
       [:span.image.is-48x48 [:img {:src img}]]]]))
 
