@@ -64,10 +64,6 @@
   (js/L.divIcon #js {:className (str "pokemon pokemon-" idx)
                      :iconSize  #js [40 32]}))
 
-(rum/defc ds-connector < ds-connector-mixin
-  []
-  [:div])
-
 (rum/defc pokemap < rum/reactive
                     {:did-mount (fn [state]
                                   (let [map (.getLeafletElement (rum/ref state "poke"))]
