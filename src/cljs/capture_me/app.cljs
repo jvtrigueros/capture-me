@@ -19,23 +19,27 @@
    :accessToken "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw"
    :attribution "© <a href='https://www.mapbox.com/map-feedback/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"})
 
-(def ds-connector-mixin
-  {:init         (fn [state props]
-                   (assoc state ::client (js/deepstream "localhost:6020")))
-   :will-mount   (fn [state]
-                   (let [client (::client state)]
-                     (.login client)
-                     state))
-   :did-mount    (fn [state]
-                   (let [client (::client state)
-                         record (.getRecord (.-record client) "pokemon/1")]
-                     (.subscribe record #(.log js/console %))
-                     state))
-   :will-unmount (fn [state]
-                   (let [client (::client state)]
-                     (println "unmount")
-                     (.close client)
-                     state))})
+(def deepstream-mixin
+  {:child-context    (fn [state]
+                       {:client (::client state)})
+   :class-properties {:childContextTypes {:client js/React.PropTypes.object}}
+   :init             (fn [state props]
+                       (assoc state ::client (js/deepstream "localhost:6020")))
+   :will-mount       (fn [state]
+                       (let [client (::client state)]
+                         (.login client)
+                         state))
+   ;:did-mount
+   #_(fn [state]
+       (let [client (::client state)
+             record (.getRecord (.-record client) "pokemon/1")]
+         (.subscribe record #(.log js/console %))
+         state))
+   :will-unmount     (fn [state]
+                       (let [client (::client state)]
+                         (println "unmount")
+                         (.close client)
+                         state))})
 
 (def locate-control-mixin
   {:did-mount (fn [state]
@@ -57,16 +61,12 @@
                      state))
    :will-unmount (fn [state]
                    (let [map (::leaflet-element state)]
-                     (.off map ("move"))
+                     (.off map "move")
                      state))})
 
 (defn pokemon-div-icon [idx]
   (js/L.divIcon #js {:className (str "pokemon pokemon-" idx)
                      :iconSize  #js [40 32]}))
-
-(rum/defc ds-connector < ds-connector-mixin
-  []
-  [:div])
 
 (rum/defc pokemap < rum/reactive
                     {:did-mount (fn [state]
@@ -95,8 +95,8 @@
   [:p.heading (.format (:current-time (rum/react app-state)) "dddd, MMMM Do YYYY, h:mm:ss a")])
 
 (rum/defc poke-modal < rum/reactive
-  [title is-active]
-  (let [inputs [[title] ["Location"]]
+  [title datalist is-active]
+  (let [inputs [[title (rum/reactive datalist)] ["Location"]]
         kebab #(->kebab-case-string %)
         class (if (rum/react is-active) {:class "is-active"})
         close #(swap! is-active not)
@@ -113,28 +113,58 @@
         (map-indexed (fn [idx input]
                        (let [label (first input)
                              id (kebab label)
-                             value (second input)]
+                             data (second input)]
                          (vector :p.control {:key idx}
                                  [:label.label {:for id} label]
-                                 [:input.input {:id    id
-                                                :value value
-                                                :type  "text"}])))
+                                 [:input.input {:name id
+                                                :list id
+                                                :type "text"}]
+                                 [:datalist {:id id}
+                                  (map-indexed #(vector :option {:value %2 :key %1}) data)])))
+
                      inputs)]]
       [:footer.modal-card-foot
        [:a.button.is-primary "Save"]
        [:a.button {:on-click close} "Cancel"]]]]))
 
-(rum/defcs pokemon-action < rum/static
-                            (rum/local false ::is-active)
-  [state title img]
-  (let [is-active (::is-active state)]
+(rum/defcs pokemon-action < (rum/local false ::is-active)
+                            {:class-properties {:contextTypes {:client js/React.PropTypes.object}}
+                             :will-mount       (fn [state]
+                                                 (if-let [query (last (:rum/args state))]
+                                                   (let [component (:rum/react-component state)
+                                                         deepstream-client (.. component -context -client)
+                                                         string-query (.stringify js/JSON (clj->js query))
+                                                         entries (atom [])
+                                                         list (-> deepstream-client
+                                                                  .-record
+                                                                  (.getList (str "search?" string-query)))]
+                                                     (.whenReady list
+                                                                 (fn [list]
+                                                                   (doseq [entry (js->clj (.getEntries list))
+                                                                           :let [record-id (str (:table query) "/" entry)]]
+                                                                     (-> deepstream-client
+                                                                         .-record
+                                                                         (.getRecord record-id)
+                                                                         (.whenReady (fn [record]
+                                                                                       (let [name (-> record .get .-name)]
+                                                                                         (do
+                                                                                           (.log js/console name)
+                                                                                           (swap! state update-in [::entries] conj)))))))))
+                                                     ;(.log js/console (-> record .get .-name))))))))
+                                                     (assoc state ::list list))))}
+
+  [state title img query]
+  (let [is-active (::is-active state)
+        entries (::entries state)]
+    ;sorted-entries (sort #(- %1 %2) entries)
     [:div
-     (poke-modal title is-active)
+     (poke-modal title entries is-active)
      [:a {:on-click #(swap! is-active not)}
       [:span.image.is-48x48 [:img {:src img}]]]]))
 
 (rum/defcs app < (rum/local {::show-map    true
                              ::toggle-menu false})
+                 deepstream-mixin
   [state]
   (let [show-map (rum/cursor (:rum/local state) ::show-map)
         toggle-menu (rum/cursor (:rum/local state) ::toggle-menu)]
@@ -164,9 +194,9 @@
        [:.card.is-fullwidth
         [:.card-image (if @show-map (pokemap))]
         [:footer.card-footer
-         [:.card-footer-item.pokemon-button (pokemon-action "Pokémon" "img/pokemon.svg")]
-         [:.card-footer-item.pokemon-button (pokemon-action "Pokéstop" "img/pokestop.svg")]
-         [:.card-footer-item.pokemon-button (pokemon-action "Pokégym" "img/pokegym.svg")]]]]]]))
+         [:.card-footer-item.pokemon-button (pokemon-action "Pokémon" "img/pokemon.svg" {:table "pokemon" :query [["ds_id" "gt" 0]]})]
+         #_[:.card-footer-item.pokemon-button (pokemon-action "Pokéstop" "img/pokestop.svg" {})]
+         #_[:.card-footer-item.pokemon-button (pokemon-action "Pokégym" "img/pokegym.svg" {})]]]]]]))
 
 (defn init []
   (rum/mount
