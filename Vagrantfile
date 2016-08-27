@@ -6,7 +6,7 @@ Vagrant.configure(2) do |config|
   config.vm.box = "bento/ubuntu-14.04"
 
   config.vm.network "forwarded_port", guest: 80, host: 8080 # NGINX
-  config.vm.network "forwarded_port", guest: 20815, host: 20815 # RethinkDB
+  config.vm.network "forwarded_port", guest: 28015, host: 28015 # RethinkDB
 
   config.vm.provision "shell", inline: <<-SHELL
     if [ ! -f /opt/ansible.installed ]; then
