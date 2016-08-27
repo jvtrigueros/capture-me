@@ -1,0 +1,45 @@
+---
+- hosts: 127.0.0.1
+  sudo: yes
+
+  roles:
+    - role: jdauphant.nginx
+      nginx_sites:
+        rethinkdb:
+          - listen 80
+          - root /var/www/html
+          - index index.nginx-debian.html
+          - location /rethinkdb-admin/ { proxy_pass http://localhost:8080/; }
+
+  tasks:
+    - name: Add RethinkDB GPG Key
+      apt_key: url=https://download.rethinkdb.com/apt/pubkey.gpg state=present
+      register: rethinkdbkey
+
+    - name: Add RethinkDB Repository
+      apt_repository:
+        repo: deb http://download.rethinkdb.com/apt trusty main
+        state: present
+      when: rethinkdbkey|success
+      register: rethinkdbrepo
+
+    - name: Install RethinkDB
+      apt:
+        pkg: rethinkdb
+        state: present
+        update_cache: true
+      when: rethinkdbrepo|success
+      register: rethinkdbinstall
+
+    - name: Configure RethinkDB Instance
+      template: src=templates/instance1.conf dest=/etc/rethinkdb/instances.d/instance1.conf
+      when: rethinkdbinstall|success
+      notify:
+        - Start RethinkDB
+
+
+  handlers:
+    - name: Start RethinkDB
+      service:
+        name: rethinkdb
+        state: started

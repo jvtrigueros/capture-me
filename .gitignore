@@ -3,4 +3,4 @@
 /out
 .nrepl-history
 project.clj
-
+.vagrant/
